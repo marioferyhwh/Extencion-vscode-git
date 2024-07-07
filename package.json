@@ -2,6 +2,8 @@
   "name": "tool-git",
   "displayName": "tool-git",
   "description": "herramientas de git",
+  "publisher": "mrobayo",
+  "repository": "https://github.com/marioferyhwh/Extencion-vscode-tools-git",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.91.0"
@@ -10,7 +12,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -34,6 +36,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
+    "generate": "vsce package",
+    "publish": "vsce publish",
     "test": "vscode-test"
   },
   "devDependencies": {
