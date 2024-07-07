@@ -1,3 +1,4 @@
+//commands.ts
 export const COMMAND_GIT = {
   STATUS: "git -p status",
   BRANCH: "git -p branch",

@@ -5,6 +5,7 @@ import { COMMAND_GIT } from "../const/comands";
 import { runCommand } from "../utils/utils";
 import { TEXT_CLEAN } from "../const/const";
 import { ObjectWithAnyValues } from "../type/ObjectWithAnyValues";
+import { logError, logInfo } from "../utils/outputChannel";
 
 const traverseBranches = function (listBranch: ObjectWithAnyValues) {
   for (const [key, element] of Object.entries(listBranch)) {
@@ -18,19 +19,19 @@ const traverseBranches = function (listBranch: ObjectWithAnyValues) {
   }
 };
 
-export async function UpdateLocalBranches(outputChannel: any) {
+export async function UpdateLocalBranches() {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
   if (workspaceFolders && workspaceFolders.length > 0) {
     const projectPath = workspaceFolders[0].uri.fsPath;
-    outputChannel.appendLine(projectPath);
+    logInfo(projectPath);
     try {
       const branchCurrent = await runCommand(
         COMMAND_GIT.BRANCH_CURRENT,
         projectPath
       );
 
-      outputChannel.appendLine("branchCurrent" + branchCurrent);
+      logInfo("branchCurrent" + branchCurrent);
 
       let answer = await runCommand(COMMAND_GIT.BRANCH_LIST, projectPath);
       const listBranch = answer.split("\n").reduce((prev: any, value) => {
@@ -59,15 +60,15 @@ export async function UpdateLocalBranches(outputChannel: any) {
         return prev;
       }, {});
       traverseBranches(listBranch);
-      outputChannel.appendLine("listBranch:" + { listBranch });
+      logInfo("listBranch:" + { listBranch });
       /*
       let index = gitStatus.search(TEXT_CLEAN);
       if (index === -1) {
-        outputChannel.appendLine("Changes no detected in the git.");
+        logInfo("Changes no detected in the git.");
         //return;
       }*/
     } catch (error) {
-      outputChannel.appendLine(`Error: ${error}`);
+      logError(`Error: ${error}`);
     }
   } else {
     vscode.window.showErrorMessage("No workspace folder open");
