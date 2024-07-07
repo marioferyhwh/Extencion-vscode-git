@@ -21,3 +21,12 @@ export async function getCurrentBranch(): Promise<string> {
   const branchCurrent = await runCommand(COMMAND_GIT.BRANCH_CURRENT);
   return branchCurrent.trim();
 }
+
+export async function DownloaderRemoteBranches() {
+  console.log("fetch");
+  await runCommand(COMMAND_GIT.FETCH);
+}
+
+export async function getListBranches(): Promise<string[]> {
+  return (await runCommand(COMMAND_GIT.BRANCH_LIST)).split("\n");
+}

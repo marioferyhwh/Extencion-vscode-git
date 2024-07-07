@@ -2,11 +2,15 @@
 
 import * as vscode from "vscode";
 import { COMMAND_GIT } from "../const/comands";
-import { getCurrentBranch, runCommand } from "../utils/utils";
-import { TEXT_CLEAN } from "../const/const";
 import { ObjectWithAnyValues } from "../type/ObjectWithAnyValues";
-import { logError, logInfo } from "../utils/outputChannel";
+import { logError, logInfo, logWarning } from "../utils/outputChannel";
 import { SetPathCommands } from "../utils/Path";
+import {
+  DownloaderRemoteBranches,
+  getCurrentBranch,
+  getListBranches,
+  runCommand,
+} from "../utils/utils";
 
 const LOCAL = "LOCAL";
 const REMOTE = "REMOTE";
@@ -75,24 +79,17 @@ const traverseBranches = async function (listBranch: ObjectWithAnyValues) {
       branchRemote
     );
     if (!isBranchOutDate) {
-      logInfo(`No update needed for branch "${branch}"`);
       const isBranchBaseOutDate = await branchOutDateTobranchBase(
         branchRemote,
         branch
       );
       if (isBranchBaseOutDate) {
-        logInfo(
-          `Remote branch "${branchRemote}" has changes that need to be pushed`
-        );
-        vscode.window.showWarningMessage(
-          `Remote branch "${branchRemote}" has changes that need to be pushed`
+        logWarning(
+          `Remote branch "${branchRemote}" has changes that need to be pushed`,
+          true
         );
       } else {
-        logInfo(`Manual review needed for branch "${branch}"`);
-
-        vscode.window.showWarningMessage(
-          `Manual review needed for branch "${branch}"`
-        );
+        logWarning(`Manual review needed for branch "${branch}"`, true);
       }
       continue;
     }
@@ -113,8 +110,9 @@ export async function UpdateLocalBranches() {
     const projectPath = workspaceFolders[0].uri.fsPath;
     SetPathCommands(projectPath);
     try {
-      let answer = await runCommand(COMMAND_GIT.BRANCH_LIST);
-      const listBranch = answer.split("\n").reduce((prev: any, value) => {
+      await DownloaderRemoteBranches();
+      let answer = await getListBranches();
+      const listBranch = answer.reduce((prev: any, value) => {
         if (value === "") {
           return prev;
         }
@@ -138,18 +136,11 @@ export async function UpdateLocalBranches() {
       }, {});
       await traverseBranches(listBranch);
 
-      logInfo("Branch processed successfully");
-      vscode.window.showInformationMessage("Branch processed successfully");
-      /*
-      let index = gitStatus.search(TEXT_CLEAN);
-      if (index === -1) {
-        logInfo("Changes no detected in the git.");
-        //return;
-      }*/
+      logInfo("Branch processed successfully", true);
     } catch (error) {
-      logError(`Error: ${error}`);
+      logError(`${error}`);
     }
   } else {
-    vscode.window.showErrorMessage("No workspace folder open");
+    logError("No workspace folder open", true);
   }
 }
