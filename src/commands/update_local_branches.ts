@@ -138,7 +138,7 @@ export async function UpdateLocalBranches() {
       }, {});
       await traverseBranches(listBranch);
 
-      logInfo("Branch list processed successfully");
+      logInfo("Branch processed successfully");
       vscode.window.showInformationMessage("Branch processed successfully");
       /*
       let index = gitStatus.search(TEXT_CLEAN);

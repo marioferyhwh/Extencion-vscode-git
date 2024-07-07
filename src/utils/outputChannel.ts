@@ -7,5 +7,5 @@ export function logInfo(message: string): void {
   outputChannel.appendLine(`INFO: ${message}`);
 }
 export function logError(error: string): void {
-  outputChannel.appendLine(`Error: ${error}`);
+  outputChannel.appendLine(`ERROR: ${error}`);
 }

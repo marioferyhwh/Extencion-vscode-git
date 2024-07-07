@@ -9,8 +9,9 @@ export function activate(context: vscode.ExtensionContext) {
   const COMMAND_UPDATE_LOCAL_BRANCHES =
     EXTENSIONS_NAME + ".updateLocalBranches";
 
-  console.log('Congratulations, your extension "tool-git" is now active!');
-
+  vscode.window.showInformationMessage(
+    ' your extension "tool-git" is now active'
+  );
   const disposable = vscode.commands.registerCommand(COMMAND_HELLO_WORD, () => {
     logInfo("gitLog");
     vscode.window.showInformationMessage("Hello World from tool-git!");
