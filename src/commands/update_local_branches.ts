@@ -111,34 +111,36 @@ export async function UpdateLocalBranches() {
     SetPathCommands(projectPath);
     try {
       await DownloaderRemoteBranches();
-      let answer = await getListBranches();
-      const listBranch = answer.reduce((prev: any, value) => {
+      let listBranch = await getListBranches();
+      const objBranches = listBranch.reduce((prev: any, value) => {
         if (value === "") {
           return prev;
         }
-        const data = value.split(" ");
+        const [commit, branchFullName] = value.split(" ");
 
-        const BranchArray =
-          data[1].match(/^(refs\/heads\/)(.*)/) ??
-          (data[1].match(/^(refs\/remotes\/origin\/)(.*)/) as RegExpMatchArray);
+        const branchArray =
+          branchFullName.match(/^(refs\/heads\/)(.*)/) ??
+          (branchFullName.match(
+            /^(refs\/remotes\/origin\/)(.*)/
+          ) as RegExpMatchArray);
 
-        let brach = BranchArray[2];
-        let element = prev[brach] ?? {};
-        if (BranchArray[1] === "refs/heads/") {
-          element[LOCAL] = data[0];
+        let branchName = branchArray[2];
+        let branchObj = prev[branchName] ?? {};
+        if (branchArray[1] === "refs/heads/") {
+          branchObj[LOCAL] = commit;
         } else {
-          element[REMOTE] = data[0];
+          branchObj[REMOTE] = commit;
         }
 
-        prev[brach] = element;
+        prev[branchName] = branchObj;
 
         return prev;
       }, {});
-      await traverseBranches(listBranch);
+      await traverseBranches(objBranches);
 
       logInfo("Branch processed successfully", true);
     } catch (error) {
-      logError(`${error}`);
+      logError(`${error}`, true);
     }
   } else {
     logError("No workspace folder open", true);
