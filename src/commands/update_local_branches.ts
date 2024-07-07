@@ -84,8 +84,15 @@ const traverseBranches = async function (listBranch: ObjectWithAnyValues) {
         logInfo(
           `Remote branch "${branchRemote}" has changes that need to be pushed`
         );
+        vscode.window.showWarningMessage(
+          `Remote branch "${branchRemote}" has changes that need to be pushed`
+        );
       } else {
         logInfo(`Manual review needed for branch "${branch}"`);
+
+        vscode.window.showWarningMessage(
+          `Manual review needed for branch "${branch}"`
+        );
       }
       continue;
     }
@@ -130,7 +137,9 @@ export async function UpdateLocalBranches() {
         return prev;
       }, {});
       await traverseBranches(listBranch);
+
       logInfo("Branch list processed successfully");
+      vscode.window.showInformationMessage("Branch processed successfully");
       /*
       let index = gitStatus.search(TEXT_CLEAN);
       if (index === -1) {
