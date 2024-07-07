@@ -3,7 +3,12 @@
 import * as vscode from "vscode";
 import { COMMAND_GIT } from "../const/comands";
 import { ObjectWithAnyValues } from "../type/ObjectWithAnyValues";
-import { logError, logInfo, logWarning } from "../utils/outputChannel";
+import {
+  logError,
+  logInfo,
+  logStatus,
+  logWarning,
+} from "../utils/outputChannel";
 import { SetPathCommands } from "../utils/Path";
 import {
   DownloaderRemoteBranches,
@@ -94,7 +99,7 @@ const traverseBranches = async function (listBranch: ObjectWithAnyValues) {
       continue;
     }
 
-    logInfo(`Updating branch "${branch}"`);
+    logStatus(`Updating branch "${branch}"`);
     if (branch === currentBranch) {
       await UpdateCurrentBranch(branch, branchRemote);
     } else {
