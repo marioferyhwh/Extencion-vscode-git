@@ -1,8 +1,22 @@
 //update_local_branches.ts
 
 import * as vscode from "vscode";
-import { GIT_LOG_1 } from "../const/comands";
+import { COMMAND_GIT } from "../const/comands";
 import { runCommand } from "../utils/utils";
+import { TEXT_CLEAN } from "../const/const";
+import { ObjectWithAnyValues } from "../type/ObjectWithAnyValues";
+
+const traverseBranches = function (listBranch: ObjectWithAnyValues) {
+  for (const [key, element] of Object.entries(listBranch)) {
+    if (
+      element["LOCAL"] &&
+      element["REMOTE"] &&
+      element["LOCAL"] !== element["REMOTE"]
+    ) {
+      console.log(`${key}: ${element}`);
+    }
+  }
+};
 
 export async function UpdateLocalBranches(outputChannel: any) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -11,8 +25,47 @@ export async function UpdateLocalBranches(outputChannel: any) {
     const projectPath = workspaceFolders[0].uri.fsPath;
     outputChannel.appendLine(projectPath);
     try {
-      const gitLog = await runCommand(GIT_LOG_1, projectPath);
-      outputChannel.appendLine(gitLog);
+      const branchCurrent = await runCommand(
+        COMMAND_GIT.BRANCH_CURRENT,
+        projectPath
+      );
+
+      outputChannel.appendLine("branchCurrent" + branchCurrent);
+
+      let answer = await runCommand(COMMAND_GIT.BRANCH_LIST, projectPath);
+      const listBranch = answer.split("\n").reduce((prev: any, value) => {
+        if (value === "") {
+          return prev;
+        }
+        const data = value.split(" ");
+
+        const BranchArray =
+          data[1].match(/^(refs\/heads\/)(.*)/) ??
+          (data[1].match(/^(refs\/remotes\/origin\/)(.*)/) as RegExpMatchArray);
+
+        if ("%(refname)'" === BranchArray[2]) {
+          return prev;
+        }
+        let brach = BranchArray[2];
+        let element = prev[brach] ?? {};
+        if (BranchArray[1] === "refs/heads/") {
+          element["LOCAL"] = data[0];
+        } else {
+          element["REMOTE"] = data[0];
+        }
+
+        prev[brach] = element;
+
+        return prev;
+      }, {});
+      traverseBranches(listBranch);
+      outputChannel.appendLine("listBranch:" + { listBranch });
+      /*
+      let index = gitStatus.search(TEXT_CLEAN);
+      if (index === -1) {
+        outputChannel.appendLine("Changes no detected in the git.");
+        //return;
+      }*/
     } catch (error) {
       outputChannel.appendLine(`Error: ${error}`);
     }
