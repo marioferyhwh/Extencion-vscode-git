@@ -14,6 +14,7 @@ import {
   DownloaderRemoteBranches,
   getCurrentBranch,
   getListBranches,
+  isGitClean,
   runCommand,
 } from "../utils/utils";
 
@@ -38,6 +39,14 @@ const branchOutDateTobranchBase = async function (
 
 const UpdateCurrentBranch = async function (branch: string, brachBase: string) {
   logInfo("Updating current branch");
+  const isClean = await isGitClean();
+  if (!isClean) {
+    logWarning(
+      `Changes detected in branch "${branch}". Perform a clean first.`,
+      true
+    );
+    return;
+  }
   await runCommand(
     COMMAND_GIT.BRACH_CURRENT_UPDATE_FORCE.replace(
       /\$\{branch\_base\}/,
