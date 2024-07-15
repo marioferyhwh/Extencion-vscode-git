@@ -25,7 +25,18 @@
         "command": "tool-git.updateLocalBranches",
         "title": "Update Local Branches"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Tool Git",
+      "properties": {
+        "ToolGit.AutoUpdateLocalBranches": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable automatic Update Branches when a open project."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

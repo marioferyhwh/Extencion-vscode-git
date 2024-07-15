@@ -3,6 +3,7 @@ import { exec } from "child_process";
 import { COMMAND_GIT } from "../const/comands";
 import { PATTERN } from "../const/pattern";
 import { GetPathCommands } from "./Path";
+import { logError, logInfo } from "./outputChannel";
 
 export function runCommand(command: string): Promise<string> {
   const cwd = GetPathCommands();
@@ -23,8 +24,12 @@ export async function getCurrentBranch(): Promise<string> {
 }
 
 export async function DownloaderRemoteBranches() {
-  console.log("fetch");
-  await runCommand(COMMAND_GIT.FETCH);
+  try {
+    await runCommand(COMMAND_GIT.FETCH);
+  } catch (error) {
+    logError(`${COMMAND_GIT.FETCH}=>${error}`, true);
+    logInfo(`Ejecute manueal mente el comando => ${COMMAND_GIT.FETCH}`, true);
+  }
 }
 
 export async function getListBranches(): Promise<string[]> {
