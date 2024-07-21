@@ -67,11 +67,18 @@ export async function getCurrentBranch(): Promise<string> {
 
 export async function DownloaderRemoteBranches() {
   try {
-    await runCommandDynamic(COMMAND_GIT.FETCH);
-    logInfo(`execute command => ${COMMAND_GIT.FETCH}`);
+    await runCommand(COMMAND_GIT.FETCH);
+    logInfo(`execute command 1 => ${COMMAND_GIT.FETCH}`);
   } catch (error) {
-    logError(`${COMMAND_GIT.FETCH}=>${error}`, true);
-    logInfo(`execute manually the command => ${COMMAND_GIT.FETCH}`, true);
+    try {
+      await runCommandDynamic(COMMAND_GIT.FETCH);
+      logInfo(`execute command 2 => ${COMMAND_GIT.FETCH}`);
+    } catch (error) {
+      logInfo(
+        `execute manually the command => ${COMMAND_GIT.FETCH} --${error} `,
+        true
+      );
+    }
   }
 }
 
