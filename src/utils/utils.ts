@@ -1,5 +1,5 @@
 //utils.ts
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import { COMMAND_GIT } from "../const/comands";
 import { PATTERN } from "../const/pattern";
 import { GetPathCommands } from "./Path";
@@ -18,6 +18,48 @@ export function runCommand(command: string): Promise<string> {
   });
 }
 
+export function runCommandDynamic(commandComplete: string): Promise<string> {
+  const cwd = GetPathCommands();
+  const [command, ...args] = commandComplete.split(" ");
+  return new Promise((resolve, reject) => {
+    const executeCommand = spawn(command, args, {
+      cwd,
+      shell: true,
+      detached: true,
+    });
+
+    executeCommand.stdout.on("data", (data) => {
+      console.log(`stdout:\n${data}`);
+    });
+
+    // Manejar los errores estándar
+    executeCommand.stderr.on("data", (data) => {
+      console.error(`stderr: ${data}`);
+    });
+
+    // Manejar los errores de ejecución
+    executeCommand.on("message", (message) => {
+      console.error(`message: ${message}`);
+    });
+
+    // Manejar los errores de ejecución
+    executeCommand.on("error", (error) => {
+      console.error(`error: ${error.message}`);
+    });
+
+    // Manejar el cierre del proceso
+    executeCommand.on("close", (code, signal) => {
+      if (code === 0) {
+        console.log("child process exited successfully");
+        resolve("child process exited successfully");
+      } else {
+        console.error(`child process exited with code ${code} ${signal}`);
+        reject(`child process exited with code ${code} ${signal}`);
+      }
+    });
+  });
+}
+
 export async function getCurrentBranch(): Promise<string> {
   const branchCurrent = await runCommand(COMMAND_GIT.BRANCH_CURRENT);
   return branchCurrent.trim();
@@ -25,10 +67,11 @@ export async function getCurrentBranch(): Promise<string> {
 
 export async function DownloaderRemoteBranches() {
   try {
-    await runCommand(COMMAND_GIT.FETCH);
+    await runCommandDynamic(COMMAND_GIT.FETCH);
+    logInfo(`execute command => ${COMMAND_GIT.FETCH}`);
   } catch (error) {
     logError(`${COMMAND_GIT.FETCH}=>${error}`, true);
-    logInfo(`Ejecute manueal mente el comando => ${COMMAND_GIT.FETCH}`, true);
+    logInfo(`execute manually the command => ${COMMAND_GIT.FETCH}`, true);
   }
 }
 

@@ -2,7 +2,7 @@
 export const COMMAND_GIT = {
   STATUS: "git -p status ",
   BRANCH: "git -p branch ",
-  FETCH: "git -p fetch ",
+  FETCH: "git fetch ",
   BRANCH_CURRENT: "git -p branch --show-current ",
   BRANCH_LIST:
     'git -P for-each-ref --format="%(objectname) %(refname)" refs/heads refs/remotes ',
