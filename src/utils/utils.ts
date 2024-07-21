@@ -10,7 +10,7 @@ export function runCommand(command: string): Promise<string> {
   return new Promise((resolve, reject) => {
     exec(command, { cwd }, (error, stdout, stderr) => {
       if (error) {
-        reject(stderr);
+        reject(stderr || error);
       } else {
         resolve(stdout);
       }
@@ -83,4 +83,15 @@ export async function isGitClean(): Promise<boolean> {
   const status = await runCommand(COMMAND_GIT.STATUS);
   const findClean = status.search(PATTERN.GIT_CLEAN);
   return findClean !== -1;
+}
+
+export async function isGitEnvironment(): Promise<boolean> {
+  try {
+    const status = await runCommand(COMMAND_GIT.STATUS);
+    const findNotRepository = status.search(PATTERN.NOT_GIT_REPOSITORY);
+    return findNotRepository === -1;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }

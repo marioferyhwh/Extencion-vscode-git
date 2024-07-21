@@ -15,6 +15,7 @@ import {
   getCurrentBranch,
   getListBranches,
   isGitClean,
+  isGitEnvironment,
   runCommand,
 } from "../utils/utils";
 
@@ -124,6 +125,11 @@ export async function UpdateLocalBranches() {
     const projectPath = workspaceFolders[0].uri.fsPath;
     SetPathCommands(projectPath);
     try {
+      const isEnvironmentGit = await isGitEnvironment();
+      if (!isEnvironmentGit) {
+        logError("Not a Git repository", true);
+        return;
+      }
       await DownloaderRemoteBranches();
       let listBranch = await getListBranches();
       const objBranches = listBranch.reduce((prev: any, value) => {
