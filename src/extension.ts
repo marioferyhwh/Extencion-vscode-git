@@ -20,6 +20,15 @@ export function activate(context: vscode.ExtensionContext) {
       await UpdateLocalBranches();
     })
   );
+
+  const config = vscode.workspace.getConfiguration("ToolGit");
+  const autoUpdateLocalBranches = config.get<boolean>(
+    "AutoUpdateLocalBranches",
+    false
+  );
+  if (autoUpdateLocalBranches) {
+    UpdateLocalBranches();
+  }
 }
 
 // This method is called when your extension is deactivated

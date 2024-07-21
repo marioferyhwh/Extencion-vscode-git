@@ -4,7 +4,7 @@
   "description": "herramientas de git",
   "publisher": "mrobayo",
   "repository": "https://github.com/marioferyhwh/Extencion-vscode-tools-git",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.91.0"
   },
@@ -32,7 +32,7 @@
       "properties": {
         "ToolGit.AutoUpdateLocalBranches": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Enable or disable automatic Update Branches when a open project."
         }
       }
